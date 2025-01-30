@@ -37,6 +37,7 @@ import { DataTableViewOptions } from "./data-table-view-options"
 import { fetchCountries, fetchDataset } from "@/lib/data"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 import { DebouncedInput } from "../ui/debounced-input"
+import { Skeleton } from "../ui/skeleton"
 
 export function DataTable<TData, TValue>({
   columns,
@@ -166,6 +167,16 @@ export function DataTable<TData, TValue>({
                     </TableCell>
                   ))}
                 </TableRow>
+              ))
+            ) : dataQuery.isLoading || dataQuery.isFetching ? (
+              [...Array(pagination.pageSize)].map((_, index) => (
+              <TableRow key={index}>
+                 {columns.map((column, colIndex) => (
+                  <TableCell key={colIndex}>
+                    <Skeleton className="w-[100px] h-[20px] rounded-full" />
+                  </TableCell>
+                ))}
+              </TableRow>
               ))
             ) : (
               <TableRow>
