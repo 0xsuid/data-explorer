@@ -6,18 +6,24 @@ from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./db.sqlite3")
+database_url = os.getenv("DATABASE_URL", "sqlite:///./db.sqlite3")
+if os.getenv("DATABASE_URL_UNPOOLED"):
+    # NeonDB
+    database_url = os.getenv("DATABASE_URL_UNPOOLED")
+elif os.getenv("POSTGRES_URL_NON_POOLING"):
+    # Supabase
+    database_url = os.getenv("POSTGRES_URL_NON_POOLING")
 
 args = {"sslmode": "require"}
 
-if "sqlite" in SQLALCHEMY_DATABASE_URL:
+if "sqlite" in database_url:
     args = {"check_same_thread": False}
 
-if "postgres://" in SQLALCHEMY_DATABASE_URL:
-    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql://")
+if "postgres://" in database_url:
+    database_url = database_url.replace("postgres://", "postgresql://")
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args=args, future=True
+    database_url, connect_args=args, future=True
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
 

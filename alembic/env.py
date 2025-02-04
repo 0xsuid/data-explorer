@@ -64,6 +64,12 @@ def run_migrations_online() -> None:
     """
     section = config.get_section(config.config_ini_section, {})
     section["sqlalchemy.url"] = os.getenv("DATABASE_URL", section["sqlalchemy.url"])
+    if os.getenv("DATABASE_URL_UNPOOLED"):
+        # NeonDB
+        section["sqlalchemy.url"] = os.getenv("DATABASE_URL_UNPOOLED")
+    elif os.getenv("POSTGRES_URL_NON_POOLING"):
+        # Supabase
+        section["sqlalchemy.url"] = os.getenv("POSTGRES_URL_NON_POOLING")
     
     if "postgres://" in section["sqlalchemy.url"]:
         section["sqlalchemy.url"] = section["sqlalchemy.url"].replace("postgres://", "postgresql://")
